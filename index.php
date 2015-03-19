@@ -1,4 +1,9 @@
-<?php include('header.php'); ?>
+<?php
+
+include('connect.php');
+include('header.php');
+
+?>
 
 <h2>Welcome</h2>
 
