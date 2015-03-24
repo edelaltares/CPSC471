@@ -7,7 +7,10 @@ include('header.php');
 
 <h2>Login</h2>
 
-<form>
+<?php
+if(!isset($_GET[POST])) {
+?>
+<form ation="login.php" method="POST">
 <table>
   <tr>
     <td>Username:</td>
@@ -22,5 +25,7 @@ include('header.php');
   </tr>
 </table>
 </form>
+<?php
+}
 
-<?php include('footer.php'); ?>
+include('footer.php'); ?>
