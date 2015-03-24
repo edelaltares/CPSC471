@@ -11,14 +11,14 @@ include('header.php');
 <table>
   <tr>
     <td>Username:</td>
-    <td><input type="form" name="username"></input></td>
+    <td><input type="form" name="username" /></td>
   </tr>
   <tr>
     <td>Password:</td>
-    <td><input type="form" name="password"></input></td>
+    <td><input type="form" name="password" /></td>
   </tr>
   <tr colspan="2">
-    <td><input type="button" name="Submit"></input></td>
+    <td><input type="submit" value="Login" /></td>
   </tr>
 </table>
 </form>
