@@ -1,14 +1,4 @@
 /*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 16-Mar-2015, 11:09:04 PM
-    Author     : Altares
-*/
-
-/*
     COLORS
     #B24026 - Red
     #2F2E12 - Brown
@@ -18,9 +8,12 @@ and open the template in the editor.
 
 body, html
 {
+    margin: 0px auto;
     font-family: Arial, Veranda, sans-serif;
     text-align: justify;
     color: #2F2E12;
+    width: 85%;
+    background: #bcbcbc;
 }
 
 /* Styling links */
@@ -48,6 +41,14 @@ h1 a, h1 a:active, h1 a:visited {
     color: #B24026;
 }
 
+h2 {
+    border-left: solid 30px;
+    padding-left: 10px;
+    color: #2F2E12;
+}
+
+h3 { color: #B24026; }
+
 /* Styling navigation buttons */
 ul.navigation {
     padding: 0px;
@@ -55,9 +56,11 @@ ul.navigation {
 }
 
 ul.navigation li {
+    padding: 5px;
     margin-right: 10px;
     display: block;
     float: left;
+    background: #2F2E12;
 }
 
 /* Main DIVs */
@@ -67,4 +70,12 @@ ul.navigation li {
 
 .content {
     clear: left;
+    padding: 25px;
+    width: 100%;
+    background: #ffffff;
+}
+
+.footer {
+    font-size: 80%;
+    text-align: center;
 }
