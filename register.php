@@ -39,44 +39,40 @@ if (isset($_POST['password'])){
 ?>
 
 <form method="post" action="register.php" >
-    <table border="0" >
-        <tr>
-            <td><b>First Name:</b></td>
-            <td><input type="text" name="firstname"></td>
-        </tr>
-        <tr>
-            <td><b>Middle Name:</b></td>
-            <td><input type="text" name="middlename"></td>
-        </tr>
-        <tr>
-            <td><b>Last Name:</b></td>
-            <td><input type="text" name="lastname"></td>
-        </tr>
-        <tr>
-            <td><b>Street Address:</b></td>
-            <td><input type="text" name="streetaddress"></td>
-        </tr>
-        <tr>
-            <td><b>City:</b></td>
-            <td><input type="text" name="city"></td>
-        </tr>
-        <tr>
-            <td><b>Postal Code:</b></td>
-            <td><input type="text" name="postalcode"></td>
-        </tr>
-        <tr>
-            <td> <b>Email:</b></td>
-            <td><input type="text" name="email"></td>
-        </tr>
-        <tr>
-            <td><b>Password:</b></td>
-            <td><input name="password" type="password"></input></td>
-        </tr>
-        <tr>
-            <td><input type="submit" value="Register"/>
-            <td><input type="button" value="Login" onclick="gotologin()"></td>
-        </tr>
-    </table>
+    <b>First Name:</b><br />
+    <input type="text" name="firstname"><br /><br />
+
+
+    <b>Middle Name:</b><br />
+    <input type="text" name="middlename"><br /><br />
+
+
+    <b>Last Name:</b><br />
+    <input type="text" name="lastname"><br /><br />
+
+
+    <b>Street Address:</b><br />
+    <input type="text" name="streetaddress"><br /><br />
+
+
+    <b>City:</b><br />
+    <input type="text" name="city"><br /><br />
+
+
+    <b>Postal Code:</b><br />
+    <input type="text" name="postalcode"><br /><br />
+
+
+     <b>Email:</b><br />
+    <input type="text" name="email"><br /><br />
+
+
+    <b>Password:</b><br />
+    <input name="password" type="password"></input><br /><br />
+
+
+    <input type="submit" value="Register"/>
+    <input type="button" value="Login" onclick="gotologin()"><br />
 </form>
 
 <?php

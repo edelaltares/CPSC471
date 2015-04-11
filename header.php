@@ -23,6 +23,7 @@
     <ul class="navigation">
         <li><a href="index.php">Home</a></li>
         <li><a href="books.php">Books</a></li>
+        <li><a href="search.php">Search</a></li>
         <li><a href="events.php">Events</a></li>
         <li><a href="patron-login.php">Login</a></li>
         <li><a href="register.php">Register</a></li>

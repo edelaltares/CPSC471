@@ -35,6 +35,16 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
 
 <h2>Patron Panel: <?php echo $username; ?></h2>
 
+<ul>
+    <li><a href="">Checked Out</a></li>
+    <li><a href="">Reserved</a></li>
+    <li><a href="">Rated</a></li>
+    <li><a href="">Borrow History</a></li>
+    <li><a href="">Payment History</a></li>
+    <li><a href="">Account</a></li>
+    <li><a href=""></a></li>
+</ul>
+
 <p><a href="logout.php">Logout</a></p>
 
     <?php

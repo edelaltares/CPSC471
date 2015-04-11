@@ -1,19 +1,30 @@
 /*
     COLORS
-    #B24026 - Red
-    #2F2E12 - Brown
-    #62B3AA - Blue
+    #155280 - Blue
+    #4D2D0B - Brown
+    #A90704 - Red
     #E4DAB6 - Tan
+    #EFEFEF - Light gray
+    #807D7D - Dark gray
 */
 
 body, html
 {
-    margin: 0px auto;
-    font-family: Arial, Veranda, sans-serif;
+    margin: 10px auto;
+    line-height: 150%;
     text-align: justify;
-    color: #2F2E12;
-    width: 85%;
-    background: #bcbcbc;
+    color: #4D2D0B;
+    width: 90%;
+}
+
+body, table {
+    font-family: Arial, Veranda, sans-serif;
+    font-size: 1.1em;
+}
+
+input, textarea {
+    border: solid 1px #807D7D;
+    background: #efefef;
 }
 
 /* Styling links */
@@ -23,7 +34,7 @@ a, a:active, a:visited, a:hover {
 }
 
 a, a:active, a:visited {
-    color: #62B3AA;
+    color: #A90704;
 }
 
 a:hover {
@@ -33,21 +44,19 @@ a:hover {
 /* Styling headers */
 
 h1 {
-    color: #B24026;
+    color: #155280;
     text-transform: uppercase;
 }
 
 h1 a, h1 a:active, h1 a:visited {
-    color: #B24026;
+    color: #155280;
 }
 
 h2 {
-    border-left: solid 30px;
-    padding-left: 10px;
-    color: #2F2E12;
+    color: #4D2D0B;
 }
 
-h3 { color: #B24026; }
+h3 { color: #155280; }
 
 /* Styling navigation buttons */
 ul.navigation {
@@ -55,20 +64,27 @@ ul.navigation {
     list-style: none;
 }
 
-ul.navigation li {
-    padding: 5px;
+ul.navigation li a {
+    padding: 10px;
     margin-right: 10px;
     display: block;
     float: left;
-    background: #2F2E12;
+    background: #A90704;
+    color: #ffffff;
+}
+
+ul.navigation li a:hover {
+    background: #155280;
 }
 
 /* Main DIVs */
 
 .nav {
+    margin: 0px auto;
 }
 
 .content {
+    margin: 0px auto;
     clear: left;
     padding: 25px;
     width: 100%;
@@ -76,6 +92,7 @@ ul.navigation li {
 }
 
 .footer {
+    margin: 0px auto;
     font-size: 80%;
     text-align: center;
 }

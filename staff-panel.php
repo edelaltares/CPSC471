@@ -35,6 +35,30 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
 
 <h2>Staff Panel: <?php echo $username; ?></h2>
 
+<p>Note: have no yet factored in whether or not staff is a manager, YET</p>
+
+<ul>
+    <li><a href="add-audiobook.php">Add audio book</a></li>
+    <li><a href="add-author.php">Add author</a></li>
+    <li><a href="add-book.php">Add book</a></li>
+    <li><a href="add-branch.php">Add branch</a></li>
+    <li><a href="add-event.php">Add event</a></li>
+    <li><a href="add-journal.php">Add journal</a></li>
+    <li><a href="add-patron.php">Add patron</a></li>
+    <li><a href="add-publisher.php">Add publisher</a></li>
+    <li><a href="add-staff.php">Add staff</a></li>
+    
+    <li><a href="audiobook.php">View audio books</a></li>
+    <li><a href="author.php">View authors</a></li>
+    <li><a href="book.php">View books</a></li>
+    <li><a href="branch.php">View branches</a></li>
+    <li><a href="event.php">View events</a></li>
+    <li><a href="journal.php">View journals</a></li>
+    <li><a href="patron.php">View patrons</a></li>
+    <li><a href="publisher.php">View publishers</a></li>
+    <li><a href="staff.php">View staff</a></li>
+</ul>
+
 <p><a href="logout.php">Logout</a></p>
 
     <?php

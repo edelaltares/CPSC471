@@ -1,9 +1,10 @@
 <?php
+// 7C-L55sK
 include('connect.php');
 include('header.php');
 ?>
 
-<h2>Books</h2>
+<h2>Latest Books</h2>
 <table width="100%">
     <!-- Table headers -->
     <tr>
@@ -11,10 +12,11 @@ include('header.php');
         <td width="50%"><h3>Author(s)</h3></td>
     </tr>
     <!-- Code for one book -->
-    <tr>
-        <td width="50%"><a href=""><?php echo "Title of book"; ?></a></td>
-        <td width="50%"><?php echo "Author(s) of book"; ?></td>
-    </tr>
+    
+    <?php 
+        viewLatestBooks($connection);
+    ?>
+    
 </table>
 
 <?php include('footer.php'); ?>
