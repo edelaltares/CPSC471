@@ -53,9 +53,9 @@ function viewBookAuthors($bookID,$connection) {
         }
         
         foreach($rows as $row) {
-            $authorList .= $row['FName'] . " " . $row['LName'];
+            $authorList .= $row['FName'] . " " . $row['LName'] . ", ";
         } // end of for loop
-        
+        $authorList = substr($authorList, 0, strlen($authorList)-2);
         return $authorList;
     } // end of if
     else { echo mysqli_error($connection); }
