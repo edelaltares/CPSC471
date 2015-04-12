@@ -40,8 +40,10 @@ Password varchar(20) not null,
 foreign key (BranchNo) references Branch(BranchNo),
 foreign key (SuperSIN) references Staff(SIN)
 );
+
 alter table Branch
 add constraint foreign key (ManagerSIN) references Staff(SIN);
+
 create table Lib_event
 (
 EventName varchar(255) primary key,

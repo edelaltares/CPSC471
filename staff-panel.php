@@ -38,6 +38,9 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
 <p>Note: have no yet factored in whether or not staff is a manager, YET</p>
 
 <ul>
+    <li><a href="borrow.php">Borrow</a></li>
+    <li><a href="payments.php">Payments</a></li>
+    
     <li><a href="add-audiobook.php">Add audio book</a></li>
     <li><a href="add-author.php">Add author</a></li>
     <li><a href="add-book.php">Add book</a></li>

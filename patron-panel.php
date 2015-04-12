@@ -42,7 +42,7 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
     <li><a href="">Borrow History</a></li>
     <li><a href="">Payment History</a></li>
     <li><a href="">Account</a></li>
-    <li><a href=""></a></li>
+    <li><a href="">Fees</a></li>
 </ul>
 
 <p><a href="logout.php">Logout</a></p>
