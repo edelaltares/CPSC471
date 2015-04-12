@@ -3,9 +3,9 @@ include('connect.php');
 include('header.php');
 ?>
 
-<h2>Login</h2>
+<h2>Patron Login</h2>
 
-<form action="member.php" method="POST">
+<form action="patron-panel.php" method="POST">
     <table>
         <tr>
             <td>Username:</td>

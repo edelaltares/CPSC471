@@ -7,14 +7,11 @@ include('connect.php');
 include('header.php');
 ?>
 
-<h2>Member Panel</h2>
-
 <?php
 if (isset($_POST['username']) and isset($_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
     // query to check if user and pw is correct
-    
     
     //$result = mysqli_query($connection, $query) or die(mysqli_error($connection));
     //$count = mysqli_num_rows($result);
@@ -22,6 +19,8 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
     //if($count == 1) {
         $_SESSION['username'] = $username;
     //}
+    //
+    //
     //else {
 ?>
 <!--    
@@ -34,7 +33,17 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
     if(isset($_SESSION['username'])) {
         $username = $_SESSION['username']; ?>
 
-<h3>Welcome, <?php echo $username; ?></h3>
+<h2>Patron Panel: <?php echo $username; ?></h2>
+
+<ul>
+    <li><a href="">Checked Out</a></li>
+    <li><a href="">Reserved</a></li>
+    <li><a href="">Rated</a></li>
+    <li><a href="">Borrow History</a></li>
+    <li><a href="">Payment History</a></li>
+    <li><a href="">Account</a></li>
+    <li><a href="">Fees</a></li>
+</ul>
 
 <p><a href="logout.php">Logout</a></p>
 
