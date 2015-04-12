@@ -6,7 +6,7 @@ function db_query($query, $connection) {
     return $result;
 }
 
-// Quote escaping values to enter into a query
+// Quote escaping values to enter for insert
 function db_quote($value,$connection) {
     if(!is_array($value)) {
         return "'" . mysqli_real_escape_string($connection, $value) . "'";
