@@ -2,7 +2,7 @@ create database library;
 use library;
 create table Patron
 (
-CardNo int(9) primary key,
+CardNo int(9) AUTO_INCREMENT primary key,
 FName varchar(255),
 LName varchar(255),
 Email varchar(255),
@@ -13,9 +13,13 @@ CrdExp date,
 Accnt_Type varchar(255) not null,
 Password varchar(20) not null
 );
+
+ALTER TABLE `library`.`patron` 
+CHANGE COLUMN `CardNo` `CardNo` INT(9) NOT NULL AUTO_INCREMENT ;
+
 create table Branch
 (
-BranchNo int(3) primary key,
+BranchNo int(3) AUTO_INCREMENT primary key,
 BranchName varchar(255),
 PhoneNo int(10),
 Address varchar(255),
@@ -23,9 +27,13 @@ City varchar(255),
 PCode varchar(255),
 ManagerSIN int(9)
 );
+
+ALTER TABLE `library`.`branch` 
+CHANGE COLUMN `BranchNo` `BranchNo` INT(3) NOT NULL AUTO_INCREMENT ;
+
 create table Staff
 (
-SIN int(9) primary key,
+SIN int(9) AUTO_INCREMENT primary key,
 FName varchar(255),
 LName varchar(255),
 Email varchar(255),
@@ -41,6 +49,9 @@ foreign key (BranchNo) references Branch(BranchNo),
 foreign key (SuperSIN) references Staff(SIN)
 );
 
+ALTER TABLE `library`.`staff` 
+CHANGE COLUMN `SIN` `SIN` INT(9) NOT NULL AUTO_INCREMENT ;
+
 alter table Branch
 add constraint foreign key (ManagerSIN) references Staff(SIN);
 
@@ -54,7 +65,7 @@ foreign key (BranchNum) references Branch(BranchNo)
 );
 create table Book
 (
-Barcode int(10) primary key,
+Barcode int(10) AUTO_INCREMENT primary key,
 ISBN int(13),
 CallNo varchar(255),
 Title varchar(255) not null,
@@ -62,6 +73,10 @@ Summary text,
 BranchNum int(3),
 foreign key (BranchNum) references Branch(BranchNo)
 );
+
+ALTER TABLE `library`.`Book` 
+CHANGE COLUMN `Barcode` `Barcode` INT(10) NOT NULL AUTO_INCREMENT ;
+
 create table Journal
 (
 JBookNo int(10) primary key,
@@ -77,10 +92,14 @@ foreign key (ABookNo) references Book(Barcode)
 );
 create table Author
 (
-AuthorID int(10) primary key,
+AuthorID int(10) primary key AUTO_INCREMENT,
 FName varchar(255),
 LName varchar(255)
 );
+
+ALTER TABLE `library`.`author` 
+CHANGE COLUMN `AuthorID` `AuthorID` INT(10) NOT NULL AUTO_INCREMENT ;
+
 create table Publisher
 (
 PublisherName varchar(255) primary key

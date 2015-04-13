@@ -5,7 +5,7 @@ include('header.php');
 
 ?>
 
-<h2>Add Patron</h2>
+<h2>Register Patron</h2>
 
 <form action="action_page.php">
     Card Number:<br />

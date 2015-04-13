@@ -4,7 +4,8 @@ include('connect.php');
 include('header.php');
 ?>
 
-<h2>Latest Books</h2>
+<h2>All Books</h2>
+
 <table width="100%">
     <!-- Table headers -->
     <tr>
