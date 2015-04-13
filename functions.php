@@ -15,9 +15,76 @@ function db_quote($value,$connection) {
 
 /* TRANSACTIONS FOR ALL USERS */
 
+// Logging in
+function login($user, $pw, $type, $connection) {
+    if($type == "Patron") { $key = "CardNo"; }
+    else { $key = "SIN"; }
+    
+    $query =   "SELECT  *
+                FROM    $type
+                WHERE   $key = $user
+                AND     Password = $pw";
+    
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        $count = mysqli_num_rows($result);
+
+        if($count == 1) {
+            if($type == "Patron") { $_SESSION['patron'] = $user; }
+            else { $_SESSION['staff'] = $user; }
+            return true;
+        }
+        else { echo "<h2>$type Panel</h2>\nInvalid login."; }
+    }
+    else { echo "<h2>$type Panel</h2>\nInvalid login." . mysqli_error($connection); }
+    
+    return false;
+}
+
+// Return name from user key
+function viewUserName($user, $type, $connection) {
+    if($type == "Patron") { $key = "CardNo"; }
+    else { $key = "SIN"; }
+    
+    $query =   "SELECT  FName, MName, LName
+                FROM    $type
+                WHERE   $key = $user";
+    
+    $result = db_query($query, $connection);
+    
+    $count = mysqli_num_rows($result);
+
+    if($result != false && $count == 1) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        foreach($rows as $row) {
+            echo $row['FName'] . " " . $row['MName'] . " " . $row['LName'];
+        }
+    }
+    else { echo "$type #$user" . mysqli_error($connection); }
+}
+
+// Check if manager
+function checkManager($user, $connection) {
+    $query =   "SELECT  *
+                FROM    Staff
+                WHERE   EXISTS
+                       (SELECT  *
+                        FROM    Branch
+                        WHERE   ManagerSIN = $user)";
+    
+    $result = db_query($query, $connection);
+
+    if($result != false) { return 1; }
+    else { return 2; }
+}
+
 // View all the books
 function viewLatestBooks($connection) {
-    $query =  "SELECT B.Title, B.Barcode
+    $query =  "SELECT DISTINCT  B.Title, B.Barcode
                FROM   book as B
                ORDER BY B.Title";
     
@@ -276,9 +343,66 @@ function viewBook($bookCode, $connection) {
     else { echo mysqli_error($connection); }
 } 
 
-// Pay off late fees
-function payLateFees($patron, $conenction) {
+// Show all  fees
+function showTotalFees($patron, $connection) {
+    $query =   "SELECT  SUM(datediff(CURDATE(), DueDate) * 0.25)
+                FROM    Borrows
+                WHERE   PatronNo = $patron
+                AND     ReturnDate IS NULL";
     
+    $result = db_query($query, $connection);
+    
+    while($row = mysqli_fetch_assoc($result)) {
+        $rows[] = $row;
+    }
+    
+    foreach($rows as $row) {
+        $fees = $row['SUM(datediff(CURDATE(), DueDate) * 0.25)'];
+        if($fees > 0) { return $fees; }
+        else { return 0; } 
+    }
+}
+
+
+// Show fees for each book
+function showSeparateFees($patron, $connection) {
+    $query =   "SELECT  SUM(datediff(CURDATE(), DueDate) * 0.25), Title
+                FROM    Borrows
+                JOIN    Book ON BookNo = Barcode
+                WHERE   PatronNo = $patron
+                AND     ReturnDate IS NULL
+                GROUP BY BookNo";
+    
+    $result = db_query($query, $connection);
+    
+    while($row = mysqli_fetch_assoc($result)) {
+        $rows[] = $row;
+    }
+    
+    foreach($rows as $row) {
+        $fees = $row['SUM(datediff(CURDATE(), DueDate) * 0.25)'];
+        if($fees > 0) { echo $row['Title'] . " " . $fees . "<br />"; }
+        else { echo $row ['Title'] . " " . 0; } 
+    }
+}
+    
+function payFees($patron, $amount, $type, $connection) {
+    $query =   "INSERT INTO Payments
+                SET         Amount = $amount)
+                WHERE       PatronNo = $patron
+                AND         Date = CURDATE()
+                AND         Type = $type";
+        
+    // Record payment
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        if(showFees($patron, $connection) > 0 && $type == "Late Fees") {
+            $query =   "UPDATE  Borrows";
+                    
+        }
+    }
+    else { echo "An error occurred." . mysqli_error($connection); }
 }
 
 /* EVENTS */

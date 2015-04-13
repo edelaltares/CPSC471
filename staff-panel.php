@@ -2,70 +2,52 @@
 
 /* A lot of code is commented out due to lack of database */
 
+session_id('staff');
 session_start();
+
 include('connect.php');
 include('header.php');
-?>
 
-<?php
 if (isset($_POST['username']) and isset($_POST['password'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    // query to check if user and pw is correct
+    $username = db_quote($_POST['username'],$connection);
+    $password = db_quote($_POST['password'],$connection);
     
-    //$result = mysqli_query($connection, $query) or die(mysqli_error($connection));
-    //$count = mysqli_num_rows($result);
+    $type = "Staff";
     
-    //if($count == 1) {
-        $_SESSION['username'] = $username;
-    //}
-    //
-    //
-    //else {
-?>
-<!--    
-<h3>Error</h3>
-<p>Wrong credentials. Please <a href="login.php">try again</a>.</p>
--->  
-    <?php
+    $login = login($username,$password,$type,$connection);
     
-    //}
-    if(isset($_SESSION['username'])) {
-        $username = $_SESSION['username']; ?>
+    if(isset($_SESSION['staff']) && $login == true) { 
+        $manager = checkManager($username, $connection);
+    ?>
 
-<h2>Staff Panel: <?php echo $username; ?></h2>
+<h2>Staff Panel: <?php viewUserName($username, $type, $connection) ?></h2>
 
-<p>Note: have no yet factored in whether or not staff is a manager, YET</p>
+
+<table>
+    <tr>
+        <td width="50%"><h3>Staff Operations</h3></td>
+    </tr>
+</table>
 
 <ul>
-    <li><a href="borrow.php">Borrow</a></li>
-    <li><a href="payments.php">Payments</a></li>
+    <li><a href="borrow.php">Loan Books</a></li>
+    <li><a href="payments.php">Make Payments</a></li>
     
-    <li><a href="add-audiobook.php">Add audio book</a></li>
-    <li><a href="add-author.php">Add author</a></li>
     <li><a href="add-book.php">Add book</a></li>
-    <li><a href="add-branch.php">Add branch</a></li>
-    <li><a href="add-event.php">Add event</a></li>
-    <li><a href="add-journal.php">Add journal</a></li>
-    <li><a href="add-patron.php">Add patron</a></li>
+    <li><a href="add-author.php">Add author</a></li>
     <li><a href="add-publisher.php">Add publisher</a></li>
-    <li><a href="add-staff.php">Add staff</a></li>
+    <li><a href="add-patron.php">Register patron</a></li>
     
-    <li><a href="audiobook.php">View audio books</a></li>
-    <li><a href="author.php">View authors</a></li>
-    <li><a href="book.php">View books</a></li>
-    <li><a href="branch.php">View branches</a></li>
-    <li><a href="event.php">View events</a></li>
-    <li><a href="journal.php">View journals</a></li>
-    <li><a href="patron.php">View patrons</a></li>
-    <li><a href="publisher.php">View publishers</a></li>
-    <li><a href="staff.php">View staff</a></li>
+    <li><a href="add-staff.php">Staff Account</a></li>
+    <li><a href="add-branch.php">Manage branches</a></li>
+    <li><a href="add-event.php">Add event</a></li>
 </ul>
 
 <p><a href="logout.php">Logout</a></p>
 
     <?php
     }
+    else { echo "<h2>Staff Panel</h2>\nAn error occurred."; }
 }
 ?>
 

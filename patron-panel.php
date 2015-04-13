@@ -2,38 +2,24 @@
 
 /* A lot of code is commented out due to lack of database */
 
+session_id('patron');
 session_start();
+
 include('connect.php');
 include('header.php');
-?>
 
-<?php
 if (isset($_POST['username']) and isset($_POST['password'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    // query to check if user and pw is correct
+    $username = db_quote($_POST['username'],$connection);
+    $password = db_quote($_POST['password'],$connection);
     
-    //$result = mysqli_query($connection, $query) or die(mysqli_error($connection));
-    //$count = mysqli_num_rows($result);
+    $type = "Patron";
     
-    //if($count == 1) {
-        $_SESSION['username'] = $username;
-    //}
-    //
-    //
-    //else {
-?>
-<!--    
-<h3>Error</h3>
-<p>Wrong credentials. Please <a href="login.php">try again</a>.</p>
--->  
-    <?php
+    $login = login($username,$password,$type,$connection);
     
-    //}
-    if(isset($_SESSION['username'])) {
-        $username = $_SESSION['username']; ?>
+    if(isset($_SESSION['patron']) && $login == true) {
+    ?>
 
-<h2>Patron Panel: <?php echo $username; ?></h2>
+<h2>Patron Panel: <?php viewUserName($username, $type, $connection); ?></h2>
 
 <ul>
     <li><a href="">Checked Out</a></li>
