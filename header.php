@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>Our Library</title>
+    <title>Hedone Libraries</title>
 
     <link rel="stylesheet" href="style.css" type="text/css" />
 
@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <h1><a href="index.php">Our Public Library</a></h1>
+    <h1><a href="index.php">Hedone Libraries</a></h1>
 
 <div class="nav">
     <ul class="navigation">

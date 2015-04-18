@@ -17,10 +17,14 @@ body, html
     width: 90%;
 }
 
-body, table {
+body {
     font-family: Arial, Veranda, sans-serif;
     font-size: 1.1em;
 }
+
+table { font-size: 1em; }
+
+td { vertical-align: top; }
 
 input, textarea {
     border: solid 1px #807D7D;

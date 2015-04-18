@@ -23,31 +23,39 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
 <h2>Staff Panel: <?php viewUserName($username, $type, $connection) ?></h2>
 
 
-<table>
+<table width="100%">
     <tr>
         <td width="50%"><h3>Staff Operations</h3></td>
+        <?php if($manager) { ?><td width="50%"><h3>Manager Operations</h3></td><?php } ?>
+    </tr>
+    <tr>
+        <td>
+            <ul>
+                <li><a href="borrow.php">Loan Books</a></li>
+                <li><a href="payments.php">Make Payments</a></li>
+                <li><a href="add-book.php">Add book</a></li>
+                <li><a href="remove-book.php">Remove book</a></li>
+                <li><a href="add-patron.php">Register patron</a></li>
+                <li><a href="remove-patron.php">Remove patron</a></li>
+            </ul>
+        </td>
+        <?php if($manager) { ?>
+        <td>
+            <ul>
+                <li><a href="add-staff.php">Add staff account</a></li>
+                <li><a href="remove-staff.php">Remove staff account</a></li>
+                <li><a href="add-event.php">Add event</a></li>
+                <li><a href="remove-event.php">Remove event</a></li>
+            </ul>
+        </td>
+        <?php } ?>
     </tr>
 </table>
-
-<ul>
-    <li><a href="borrow.php">Loan Books</a></li>
-    <li><a href="payments.php">Make Payments</a></li>
-    
-    <li><a href="add-book.php">Add book</a></li>
-    <li><a href="add-author.php">Add author</a></li>
-    <li><a href="add-publisher.php">Add publisher</a></li>
-    <li><a href="add-patron.php">Register patron</a></li>
-    
-    <li><a href="add-staff.php">Staff Account</a></li>
-    <li><a href="add-branch.php">Manage branches</a></li>
-    <li><a href="add-event.php">Add event</a></li>
-</ul>
 
 <p><a href="logout.php">Logout</a></p>
 
     <?php
     }
-    else { echo "<h2>Staff Panel</h2>\nAn error occurred."; }
 }
 ?>
 

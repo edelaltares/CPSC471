@@ -138,6 +138,45 @@ function viewBookAuthors($bookID,$connection) {
 
 /* PATRON TRANSACTIONS */
 
+//search for book
+function searchBook($keywordsearch, $connection) {
+    $query =     "SELECT    *
+                  FROM      Book
+                  WHERE     Title like '%$keywordsearch%'";
+
+    $result = db_query($query, $connection);
+
+    // Check if result is valid
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        if(!empty($rows)) { ?>
+            
+            <table width="100%">
+                <tr>
+                    <td width="50%"><h3>Title</h3></td>
+                    <td width="50%"><h3>Author(s)</h3></td>
+                </tr>
+            
+        <?php
+            foreach($rows as $row) {
+                $authors = viewBookAuthors($row['Barcode'], $connection);
+                ?>
+                <!-- HTML code for displaying book -->
+                <tr>
+                    <td width="50%"><a href="book.php?id=<?php echo $row['Barcode']; ?>"><?php echo $row['Title']; ?></a></td>
+                    <td width="50%"><?php echo $authors; ?></td>
+                </tr>
+    <?php
+            } // end of for loop
+            echo "</table>";
+        } // end of if
+        else { echo "No results found."; }
+    } // end of if
+    else { mysqli_error($connection); }
+}
+
 // View all books taken out by a patron
 function viewPatronsBooks($patronNo, $connection) {
     $query =   "SELECT  Title, Barcode, DueDate
@@ -325,18 +364,24 @@ function viewBook($bookCode, $connection) {
         }
         
         foreach($rows as $row) { ?>
-            <h2><?php echo $row['Title']; ?></h2>
 
-            <h3><?php echo viewBookAuthors($bookCode, $connection); ?></h3>
-
-            <p>
-                <a href="reserve.php?id=<?php echo $bookCode; ?>">Put on hold</a><br />
-                ISBN: <?php echo $row['ISBN']; ?><br />
-                Call Number: <?php echo $row['CallNo']; ?><br />
-                Branch Location: <?php echo $row['BranchName']; ?><br />
-            </p>
-
-            <p><?php echo $row['Summary']; ?></p>
+            <table width="100%">
+                <tr>
+                    <td><img src="http://placehold.it/200x300&text=No+Cover" /></td>
+                    <td>
+                        <h2><?php echo $row['Title']; ?></h2>
+                        <h3>By <?php echo viewBookAuthors($bookCode, $connection); ?></h3>
+                        <a href="reserve.php?id=<?php echo $bookCode; ?>">Put on hold</a><br />
+                        ISBN: <?php echo $row['ISBN']; ?><br />
+                        Publisher: France<br />
+                        Call Number: <?php echo $row['CallNo']; ?><br />
+                        Branch Location: <?php echo $row['BranchName']; ?><br />
+                        Genre: Romance<br />
+                        Rating Average: 3.33
+                        <p><?php echo $row['Summary']; ?></p>
+                    </td>
+                </tr>
+            </table>
     <?php
         }
     }
@@ -388,7 +433,7 @@ function showSeparateFees($patron, $connection) {
     
 function payFees($patron, $amount, $type, $connection) {
     $query =   "INSERT INTO Payments
-                SET         Amount = $amount)
+                SET         Amount = $amount
                 WHERE       PatronNo = $patron
                 AND         Date = CURDATE()
                 AND         Type = $type";
@@ -419,7 +464,7 @@ function addEvent($name,$date,$description,$branchno, $staff,$connection) {
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
@@ -436,7 +481,7 @@ function addEvent($name,$date,$description,$branchno, $staff,$connection) {
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
@@ -475,6 +520,50 @@ function viewEvents($connection) {
     else { echo mysqli_error($connection); }
 }
 
+//Remove a book
+function removeBook($bookNo,$connection) {
+	//Delete from Book table
+	$query = 		"DELETE FROM     Book
+       				 WHERE         Barcode = $bookNo";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        echo "Remove successfull!";
+    }
+    else {
+        echo "Remove failed.";
+        echo mysqli_error($connection);
+    }
+
+	//Delete if Audiobook
+	$query = 		"DELETE FROM     Audiobook
+       				 WHERE         
+						EXISTS(SELECT  *
+								FROM	Audiobook
+								WHERE 	AudioBookNumber = $bookNo)
+					AND		AudioBookNumber = $bookNo";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+
+	//Delete if Journal
+	$query = 		"DELETE FROM     Journal
+       				 WHERE         
+						EXISTS(SELECT  *
+								FROM	Journal
+								WHERE 	JournalNumber = $bookNo)
+					AND				JournalNumber = $bookNo";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+
+	
+}
 
 // Add a book
 function addBook($ScannedBarcode,$InputtedISBN,$InputtedCallNo,$InputtedTitle,$InputtedBranchInfo,$InputtedSummaryCanBeBlank,$pubName,$AuthorID,$connection) {
@@ -489,7 +578,7 @@ function addBook($ScannedBarcode,$InputtedISBN,$InputtedCallNo,$InputtedTitle,$I
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
@@ -505,7 +594,7 @@ function addBook($ScannedBarcode,$InputtedISBN,$InputtedCallNo,$InputtedTitle,$I
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
@@ -522,7 +611,7 @@ function addBook($ScannedBarcode,$InputtedISBN,$InputtedCallNo,$InputtedTitle,$I
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
@@ -530,6 +619,25 @@ function addBook($ScannedBarcode,$InputtedISBN,$InputtedCallNo,$InputtedTitle,$I
     }
 
 	
+}
+
+function removePatron($CardNo,$connection) {
+
+	//Delete from Patron table
+	$query = 		"DELETE FROM     Patron
+       				 WHERE         CardNo = $CardNo";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        echo "Remove successfull!";
+    }
+    else {
+        echo "Remove failed.";
+        echo mysqli_error($connection);
+    }
 }
 
 function addPatron($CardNo,$FirstName,$LastName,$Email,$Address,$City,$PostalCode,$CardExpiry,$AccountType,$Password, $connection) {
@@ -542,10 +650,28 @@ function addPatron($CardNo,$FirstName,$LastName,$Email,$Address,$City,$PostalCod
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
+        echo mysqli_error($connection);
+    }
+}
+
+function removeStaff($SIN,$connection) {
+	//Delete from Staff table
+	$query =    "DELETE FROM     Staff
+                    WHERE           SIN = $SIN";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        echo "Delete successfull!";
+    }
+    else {
+        echo "Delete failed.";
         echo mysqli_error($connection);
     }
 }
@@ -563,13 +689,32 @@ function hireStaff($givenSIN, $givenFirstName, $givenLastName, $givenEmail,$give
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
         echo mysqli_error($connection);
     }
 
+}
+
+function removeBranch($bno,$connection) {
+
+	//Delete from Branch table
+	$query = 		"DELETE FROM     Branch
+       				 WHERE         BranchNo = $bno";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        echo "Delete successfull!";
+    }
+    else {
+        echo "Delete failed.";
+        echo mysqli_error($connection);
+    }
 }
 
 function addBranch($BranchNo,$BranchName,$PhoneNo,$Address,$ManagerSIN,$connection) {
@@ -582,10 +727,29 @@ function addBranch($BranchNo,$BranchName,$PhoneNo,$Address,$ManagerSIN,$connecti
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
+        echo mysqli_error($connection);
+    }
+}
+
+function removeAuthor($id,$connection) {
+
+	//Delete from Author table
+	$query = 		"DELETE FROM     Author
+       				 WHERE         AuthorID = $id";
+
+	// Run query
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        echo "Delete successfull!";
+    }
+    else {
+        echo "Delete failed.";
         echo mysqli_error($connection);
     }
 }
@@ -600,7 +764,7 @@ function addAuthor($AuthorID,$FirstName,$LastName,$connection) {
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";
@@ -618,7 +782,7 @@ function addPublisher($name, $connection) {
     
     // Check if result is valid
     if($result != false) {
-        echo "Inserted event successfull!";
+        echo "Insert successfull!";
     }
     else {
         echo "Insert failed.";

@@ -1,9 +1,6 @@
 <?php
 include('connect.php');
 include('header.php');
-
-echo showTotalFees(1, $connection);
-echo showSeparateFees(1, $connection);
 ?>
 
 <h2>Staff Login</h2>
