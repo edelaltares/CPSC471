@@ -1,23 +1,20 @@
 <?php
-
-/* A lot of code is commented out due to lack of database */
-
-session_id('staff');
-session_start();
-
 include('connect.php');
 include('header.php');
+
+$type = "Staff";
 
 if (isset($_POST['username']) and isset($_POST['password'])) {
     $username = db_quote($_POST['username'],$connection);
     $password = db_quote($_POST['password'],$connection);
     
-    $type = "Staff";
-    
+    $manager = checkManager($username, $connection);
     $login = login($username,$password,$type,$connection);
-    
-    if(isset($_SESSION['staff']) && $login == true) { 
-        $manager = checkManager($username, $connection);
+}
+
+ if(isset($_SESSION['staff']) || $login == true) { 
+    if(isset($_SESSION['staff'])) { $username = $_SESSION['staff']; }
+    $manager = checkManager($username, $connection);
     ?>
 
 <h2>Staff Panel: <?php viewUserName($username, $type, $connection) ?></h2>
@@ -52,11 +49,8 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
     </tr>
 </table>
 
-<p><a href="logout.php">Logout</a></p>
+<p><a href="staff-logout.php">Logout</a></p>
 
-    <?php
-    }
+<?php
 }
-?>
-
-<?php include('footer.php'); ?>
+include('footer.php'); ?>

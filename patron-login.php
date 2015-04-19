@@ -1,10 +1,11 @@
 <?php
 include('connect.php');
 include('header.php');
+
+if(isset($_SESSION['patron'])) { header("Location: patron-panel.php"); }
 ?>
 
 <h2>Patron Login</h2>
-
 <form action="patron-panel.php" method="POST">
     <table>
         <tr>

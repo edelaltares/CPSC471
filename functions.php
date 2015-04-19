@@ -138,6 +138,35 @@ function viewBookAuthors($bookID,$connection) {
 
 /* PATRON TRANSACTIONS */
 
+// Patron info
+function patronInfo($username, $connection) {
+    $query =   "SELECT  *
+                FROM    patron
+                WHERE   CardNo = $username";
+    
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        foreach($rows as $row) {
+            echo "<strong>Address</strong><br />\n";
+            echo $row['Address'] . "<br />\n" . $row['City'] . " " . $row['PCode'] . "<br />\n";
+            
+            echo "<strong>Email:</strong> " . $row['Email'] . "<br />";
+            
+            echo "<strong>Phone Number:</strong> " . showPhoneNo($username, $connection) . "<br />";
+            
+            echo "<strong>Account Type:</strong> " . $row['Accnt_Type'] . "<br />\n";
+            
+            echo "<strong>Card Expiry Date:</strong> " . $row['CrdExp'] . "<br />";
+        
+            echo "<strong>Fees:</strong> " . showTotalFees($username, $connection);
+        }
+    }
+}
+
 //search for book
 function searchBook($keywordsearch, $connection) {
     $query =     "SELECT    *
@@ -408,7 +437,6 @@ function showTotalFees($patron, $connection) {
     }
 }
 
-
 // Show fees for each book
 function showSeparateFees($patron, $connection) {
     $query =   "SELECT  SUM(datediff(CURDATE(), DueDate) * 0.25), Title
@@ -430,7 +458,33 @@ function showSeparateFees($patron, $connection) {
         else { echo $row ['Title'] . " " . 0; } 
     }
 }
+
+function showPhoneNo($patron, $connection) {
+    $query =   "SELECT  *
+                FROM    patron_phoneno
+                WHERE   PatronNo = $patron";
     
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        if(!empty($rows)) {
+            $string = "";
+
+            foreach($rows as $row) {
+                $string .= $row['PhoneNo'] . ", ";
+            }
+
+            $string = substr($string, 0, strlen($string) - 2);
+            return $string;
+        }
+        else { return "No phone numbers."; }
+    }
+}
+
 function payFees($patron, $amount, $type, $connection) {
     $query =   "INSERT INTO Payments
                 SET         Amount = $amount
@@ -640,17 +694,25 @@ function removePatron($CardNo,$connection) {
     }
 }
 
-function addPatron($CardNo,$FirstName,$LastName,$Email,$Address,$City,$PostalCode,$CardExpiry,$AccountType,$Password, $connection) {
-	//INSERT into Patron table
-	$query = "INSERT INTO 		Patron
-			  VALUES			($CardNo,$FirstName,$LastName,$Email,$Address,$City,$PostalCode,$CardExpiry,$AccountType,$Password)";
+function addPatron($PhoneNo,$CardNo,$FirstName,$MiddleName,$LastName,$Email,$Address,$City,$PostalCode,$CardExpiry,$AccountType,$Password, $connection) {
+    //INSERT into Patron table
+    $query =   "INSERT INTO Patron
+                VALUES      ($CardNo,$FirstName,$MiddleName,$LastName,$Email,$Address,$City,$PostalCode,$CardExpiry,$AccountType,$Password)";
 
-	// Run query
+    // Run query
     $result = db_query($query, $connection);
     
     // Check if result is valid
     if($result != false) {
         echo "Insert successfull!";
+        
+        $PatronNo = mysqli_insert_id($connection);
+                
+        $query =   "INSERT INTO patron_phoneno
+                    VALUES      ($PhoneNo,$PatronNo)";
+        $result = db_query($query, $connection);
+        if($result != false) { echo "Phone number inserted!"; }
+        else { echo mysqli_error($connection); }
     }
     else {
         echo "Insert failed.";
