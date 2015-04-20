@@ -5,7 +5,7 @@ include('header.php');
 
 ?>
 
-<h2>Checked Out Books</h2>
+<h2>Borrowed Books</h2>
 
 <?php
 if(!isset($_GET['patron'])) {
@@ -24,6 +24,14 @@ if(!isset($_GET['patron'])) {
     }
 }
 else {
+    
+    if(isset($_POST['rate'])) {
+        $book = db_quote($_GET['book'], $connection);
+        $rating = db_quote($_POST['rating'],$connection);
+        $patron = db_quote($_GET['patron'],$connection);
+        
+        $result = rateBook($book, $rating, $patron, $connection);
+    }
     $patronNo = db_quote($_GET['patron'], $connection);
     viewPatronsBooks($patronNo, $connection);
     

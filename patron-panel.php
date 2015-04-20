@@ -22,13 +22,12 @@ patronInfo($username, $connection);
 $username = substr($username, 1, strlen($username) - 2); ?>
 
 <ul>
-    <li><a href="view-patrons-books.php?patron=<?php echo $username; ?>">Checked Out</a></li>
-    <li><a href="">Reserved</a></li>
-    <li><a href="">Rated</a></li>
-    <li><a href="">Borrow History</a></li>
-    <li><a href="">Payment History</a></li>
-    <li><a href="">Account</a></li>
-    <li><a href="">Fees</a></li>
+    <li><a href="view-patrons-books.php?patron=<?php echo $username; ?>">Borrowed Books</a></li>
+    <li><a href="view-reserves.php?patron=<?php echo $username; ?>">Reserved</a></li>
+    <li><a href="view-rated.php?patron=<?php echo $username; ?>">Rated</a></li>
+    <li><a href="view-payments.php?patron=<?php echo $username; ?>">Payments</a></li>
+    <li><a href="view-events-registered.php?patron=<?php echo $username; ?>">Registered Events</a></li>
+    <li><a href="view-fees.php?patron=<?php echo $username; ?>">Fees</a></li>
 </ul>
 
 <p><a href="patron-logout.php">Logout</a></p>
