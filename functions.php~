@@ -872,10 +872,10 @@ function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher,
     $result2 = db_query($query2, $connection);
     
     // Check if result is valid
-    if($result2 != false) {
+    if($result != false) {
         echo "Insert book successfull!<br />";
         
-        if($result != false) {
+        if($result2 != false) {
             while($row = mysqli_fetch_assoc($result2)) {
                 $rows[] = $row;
             }
