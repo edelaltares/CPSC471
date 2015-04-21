@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 static $connection;
 
 if(!isset($connection)){

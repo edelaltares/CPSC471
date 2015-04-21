@@ -4,17 +4,13 @@ include('connect.php');
 include('header.php');
 ?>
 
-<h2>View All Holds</h2>
+<h2>View Registered Events</h2>
 
 <?php
 
 if(isset($_GET['patron'])) {
     $patronNo = $_GET['patron'];
-    $type = "Patron";
-    echo "Holds for ";
-    viewUserName(db_quote($patronNo,$connection), $type, $connection);
-    echo ": ";
-    $result = viewAllHolds($patronNo, $connection);
+    $result = viewEventsRegistered($patronNo, $connection);
     echo "<br /><a href=\"patron-panel.php\">Back</a>";
 }
 else {
