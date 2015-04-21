@@ -22,10 +22,7 @@ body {
     font-size: 1.1em;
 }
 
-table {
-    font-size: 1em;
-    line-height: 150%;
-}
+table { font-size: 1em; }
 
 td { vertical-align: top; }
 

@@ -15,56 +15,6 @@ function db_quote($value,$connection) {
 
 /* TRANSACTIONS FOR ALL USERS */
 
-// View all branches
-function viewBranches($connection) {
-    $query =   "SELECT  *
-                FROM    branch";
-    
-    $result = db_query($query, $connection);
-    
-    if($result != false) {
-        $count = mysqli_num_rows($result);
-        
-        while($row = mysqli_fetch_assoc($result)) {
-            $rows[] = $row;
-        } ?>
-
-        <table width="100%">
-        <?php
-        $i = 0;
-        while($i < $count) {
-            if($i % 2 == 0) { ?>
-                <tr>
-                    <td width="50%" style="padding-bottom:15px;">
-                        <?php 
-                        echo "<strong>" . $rows[$i]['BranchName'] . "</strong><br />";
-                        echo $rows[$i]['Address'] . "<br />";
-                        echo $rows[$i]['City'] . " " . $rows[$i]['PCode'] . "<br />";
-                        echo $rows[$i]['PhoneNo'];
-                        ?>
-                    </td>
-            <?php
-            }
-            else { ?>
-                    <td width="50%" style="padding-bottom:15px;">
-                        <?php
-                        echo "<strong>" . $rows[$i]['BranchName'] . "</strong><br />";
-                        echo $rows[$i]['Address'] . "<br />";
-                        echo $rows[$i]['City'] . " " . $rows[$i]['PCode'] . "<br />";
-                        echo $rows[$i]['PhoneNo'];
-                        ?>
-                    </td>
-                </tr>
-            <?php
-            }
-            $i++;
-        } ?>
-        </table>
-    <?php
-    }
-    else { echo mysqli_error($connection); }
-}
-
 // Logging in
 function login($user, $pw, $type, $connection) {
     if($type == "Patron") { $key = "CardNo"; }
