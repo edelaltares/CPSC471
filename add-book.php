@@ -17,8 +17,11 @@ if(isset($_POST['submit'])) {
     $LName = db_quote($_POST['Last'], $connection);
     $BranchNo = db_quote($_POST['BranchNumber'], $connection);
     $Summary = db_quote($_POST['Summary'], $connection);
+    $Institution = db_quote($_POST['Institution'], $connection);
+    $Narrator = db_quote($_POST['Narrator'], $connection);
+    $Length = db_quote($_POST['Length'], $connection);
 
-    $result = addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher, $FName, $MName, $LName, $Genre, $connection);
+    $result = addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher, $FName, $MName, $LName, $Genre, $Institution, $Narrator, $Length, $connection);
 }
 
 ?>
@@ -58,6 +61,17 @@ if(isset($_POST['submit'])) {
     <br />
     Summary:<br />
     <textarea rows="4" cols="50" name="Summary"></textarea><br />
+    <br />
+    Fill only if applicable!<br />
+    <br />
+    Institution:<br />
+    <input type="text" name="Institution"><br />
+    <br />
+    Narrator:<br />
+    <input type="text" name="Narrator"><br />
+    <br />
+    Book Length in HH:MM:SS<br />
+    <input type="text" name="Length"><br />
     <br />
     <input type="submit" value="Submit" name="submit">
 </form> 

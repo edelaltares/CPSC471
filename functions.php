@@ -128,14 +128,23 @@ function checkManager($user, $connection) {
     
     $result = db_query($query, $connection);
 
-    if($result != false) { return 1; }
-    else { return 2; }
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        if(!empty($rows)) {
+            return 1;
+        }
+    }
+    else { echo "uh"; return 2; }
 }
 
 // View all the books
 function viewLatestBooks($connection) {
-    $query =  "SELECT DISTINCT  B.Title, B.Barcode
+    $query =  "SELECT  B.Title, B.Barcode, B. ISBN
                FROM   book as B
+               GROUP BY B.ISBN
                ORDER BY B.Title";
     
     $result = db_query($query, $connection);
@@ -152,7 +161,7 @@ function viewLatestBooks($connection) {
                 ?>
                 <!-- HTML code for displaying book -->
                 <tr>
-                    <td width="50%"><a href="book.php?id=<?php echo $row['Barcode']; ?>"><?php echo $row['Title']; ?></a></td>
+                    <td width="50%"><a href="book.php?id=<?php echo $row['Barcode']; ?>"><?php echo $row['Title'] . " " . bookType($row['Barcode'], $connection); ?></a></td>
                     <td width="50%"><?php echo $authors; ?></td>
                 </tr>
     <?php
@@ -160,6 +169,35 @@ function viewLatestBooks($connection) {
         }
     } // end of if
     else { mysqli_error($connection); }
+}
+
+function bookType($book, $connection) {
+    $query =   "SELECT  *
+                FROM    audio_book
+                WHERE   ABookNo = $book";
+    
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        if(!empty($rows)) { return "(Audiobook)"; }
+    }
+    
+    $query =   "SELECT  *
+                FROM    journal
+                WHERE   JBookNo = $book";
+    
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        if(!empty($rows)) { return "(Journal)"; }
+    }
+    
 }
 
 // Get all authors for a sepcified book
@@ -189,6 +227,92 @@ function viewBookAuthors($bookID,$connection) {
         else { return "No authors listed."; }
     } // end of if
     else { echo mysqli_error($connection); }
+}
+
+// View all publishers for a book
+function viewBookPublishers($bookID,$connection) {
+    $query =  "SELECT   *
+               FROM     publisher as P
+               JOIN     publisher_books AS PB ON P.PublisherName = PB.PublisherName
+               WHERE    PB.BookNo = $bookID";
+    
+    $publisherList = "";
+    
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                $publisherList .= $row['PublisherName'] . ", ";
+            } // end of for loop
+            $publisherList = substr($publisherList, 0, strlen($publisherList)-2);
+            return $publisherList;
+        }
+        else { return "No publishers listed."; }
+    } // end of if
+    else { echo mysqli_error($connection); }
+}
+
+// Get all genres for a sepcified book
+function viewBookGenres($bookID,$connection) {
+    $query =  "SELECT   *
+               FROM     genre
+               WHERE    BookNo = $bookID";
+    
+    $genreList = "";
+    
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                $genreList .= $row['Genre'] .  ", ";
+            } // end of for loop
+            $genreList = substr($genreList, 0, strlen($genreList)-2);
+            return $genreList;
+        }
+        else { return "No genres listed."; }
+    } // end of if
+    else { echo mysqli_error($connection); }
+}
+
+// Get rating for a sepcified book
+function viewBookRating($bookID,$connection) {
+    $query =  "SELECT   AVG(rating)
+               FROM     book_ratings
+               WHERE    BookNo = $bookID";
+    
+    $result = db_query($query, $connection);
+    
+    $rating = 0;
+        
+    // Check if result is valid
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                $rating = $row['AVG(rating)'];
+            }
+            return $rating;
+        }
+        else { return $rating; }
+    }
+    else { return $rating; }
+    
+    return $rating;
 }
 
 /* PATRON TRANSACTIONS */
@@ -574,11 +698,13 @@ function viewBook($bookCode, $connection) {
                         <h3>By <?php echo viewBookAuthors($bookCode, $connection); ?></h3>
                         <a href="reserve.php?id=<?php echo $bookCode; ?>">Put on hold</a><br />
                         ISBN: <?php echo $row['ISBN']; ?><br />
-                        Publisher: France<br />
+                        Publisher: <?php echo viewBookPublishers($bookCode, $connection); ?><br />
                         Call Number: <?php echo $row['CallNo']; ?><br />
-                        Branch Location: <?php echo $row['BranchName']; ?><br />
-                        Genre: Romance<br />
-                        Rating Average: 3.33
+                        Number of Copies: <?php echo bookCopies($row['ISBN'], $row['CallNo'], $row['Title'], $row['Summary'], $connection); ?><br />
+                        Genre: <?php echo viewBookGenres($bookCode, $connection); ?><br />
+                        Rating Average: <?php echo viewBookRating($bookCode, $connection); 
+                        
+                        ?>
                         <p><?php echo $row['Summary']; ?></p>
                     </td>
                 </tr>
@@ -594,7 +720,8 @@ function showTotalFees($patron, $connection) {
     $query =   "SELECT  SUM(datediff(CURDATE(), DueDate) * 0.25)
                 FROM    Borrows
                 WHERE   PatronNo = $patron
-                AND     ReturnDate IS NULL";
+                AND     ReturnDate IS NULL
+                AND     DueDate < CURDATE()";
     
     $result = db_query($query, $connection);
     
@@ -643,10 +770,6 @@ function showSeparateFees($patron, $connection) {
             </tr>
             <?php 
             }
-            else {
-                echo $row ['Title'] . " " . 0;
-                
-            } 
         }
         echo "</table>";
     }
@@ -678,26 +801,103 @@ function showPhoneNo($patron, $connection) {
     }
 }
 
-function payFees($patron, $amount, $type, $connection) {
+function payFees($patron, $amount, $type, $branch, $connection) {
     $query =   "INSERT INTO Payments
-                SET         Amount = $amount
-                WHERE       PatronNo = $patron
-                AND         Date = CURDATE()
-                AND         Type = $type";
+                VALUES      ($branch, $patron, NOW(), $amount, $type)";
         
     // Record payment
     $result = db_query($query, $connection);
     
     if($result != false) {
-        if(showFees($patron, $connection) > 0 && $type == "Late Fees") {
-            $query =   "UPDATE  Borrows";
-                    
+        $query1 =  "SELECT  Title, Barcode, DueDate, SUM(datediff(CURDATE(), DueDate) * 0.25)
+                    FROM    Borrows
+                    JOIN    Book ON BookNo = Barcode
+                    WHERE   PatronNo = $patron
+                    AND     ReturnDate IS NULL
+                    GROUP BY BookNo";
+        
+        $result1 = db_query($query1, $connection);
+        
+        $amount = substr($amount, 1, strlen($amount) - 2);
+        
+        if($result1 != false) {
+            while ($row = mysqli_fetch_assoc($result1)) {
+                $rows[] = $row;
+            }
+            
+            if(!empty($rows)) {
+                foreach($rows as $row) {
+                    if($row['SUM(datediff(CURDATE(), DueDate) * 0.25)'] == $amount) {
+                        $book = $row['Barcode'];
+                        echo $book;
+                        $query  =  "UPDATE  borrows
+                                    SET     DueDate = CURDATE()
+                                    WHERE   BookNo = $book";
+                        
+                        $result = db_query($query, $connection);
+                    }
+                }
+            }
         }
+        echo "Payment successful!";
     }
     else { echo "An error occurred." . mysqli_error($connection); }
 }
 
+function viewPayments($user, $connection) {
+    $query =   "SELECT  *
+                FROM    payments
+                WHERE   PatronNo = $user";
+    
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        
+        if(!empty($rows)) { ?>
+            <table width="100%">
+                <tr>
+                    <td width="33%"><h3>Date</h3></td>
+                    <td width="33%"><h3>Type</h3></td>
+                    <td width="33%"><h3>Amount</h3></td>
+                </tr>
+            <?php
+            foreach($rows as $row) { ?>
+                <tr>
+                    <td width="33%"><?php echo $row['PaymentDate']; ?></td>
+                    <td width="33%"><?php echo $row['PaymentType']; ?></td>
+                    <td width="33%"><?php echo $row['Amount']; ?></td>
+                </tr>
+            <?php
+            }
+            
+            echo "</table>";
+        }
+        else { echo "No payments found."; }
+    }
+}
+
 /* EVENTS */
+
+// Remove event
+function removeEvent($name, $connection) {
+    $query  =  "DELETE FROM  lib_event
+                WHERE   EventName = $name";
+    
+	// Run query
+    $result = db_query($query, $connection);
+    
+    // Check if result is valid
+    if($result != false) {
+        echo "Remove successfull!";
+    }
+    else {
+        echo "Remove failed.";
+        echo mysqli_error($connection);
+    }
+}
 
 // Add an event
 function addEvent($name,$date,$description,$branchno, $staff,$connection) {
@@ -858,39 +1058,65 @@ function removeBook($bookNo,$connection) {
 	
 }
 
-// Add a book
-function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher, $FName, $MName, $LName, $Genre, $connection) {
-    $query2 = "SELECT  *
-                    FROM    Book
-                    WHERE   ISBN = $ISBN AND CallNo = $CallNo AND Title = $Title AND Summary = $Summary AND BranchNum = $BranchNo";
+function bookCopies($ISBN, $CallNo, $Title, $Summary, $connection) {
+    $query =   "SELECT  Count(*)
+                FROM    Book
+                WHERE   ISBN = $ISBN AND CallNo = $CallNo AND Title = $Title AND Summary = $Summary";
     
+    $result = db_query($query, $connection);
+    
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                return $row['Count(*)'];
+            }
+        }
+        else { return 1; }
+    }
+    else { return 1; }
+}
+
+// Add staff member
+
+// Add a book
+function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher, $FName, $MName, $LName, $Genre, $Institution, $Narrator, $Length, $connection) {
     $query =   "INSERT INTO     Book
                 VALUES  ('null',$ISBN, $CallNo, $Title, $Summary, $BranchNo)";
-    
-    // Run query
+
     $result = db_query($query, $connection);
-    $result2 = db_query($query2, $connection);
-    
+
     // Check if result is valid
     if($result != false) {
         echo "Insert book successfull!<br />";
-        
-        if($result2 != false) {
-            while($row = mysqli_fetch_assoc($result2)) {
-                $rows[] = $row;
-            }
-            foreach($rows as $row) {
-                $ScannedBarcode = db_quote($row['Barcode'], $connection);
-            }
+
+        $ScannedBarcode = mysqli_insert_id($connection);
+
+        if($type == "'Audiobook'") {
+            $query =   "INSERT INTO audio_book
+                        VALUES      ($ScannedBarcode, $Narrator, $Length)";
+            
+            $result = db_query($query, $connection);
+            
+            if($result == false) { echo "Audiobook version was not inserted.<br />" . mysqli_error($connection); }
         }
-        else { $ScannedBarcode = db_quote(mysqli_insert_id($connection),$connection); }
+        if($type == "'Journal'") {
+            $query =   "INSERT INTO journal
+                        VALUES      ($ScannedBarcode, $Institution)";
+            
+            $result = db_query($query, $connection);
+            
+            if($result == false) { echo "Journal version was not inserted.<br />" . mysqli_error($connection); }
+        }
         
         //INSERT INTO genre TABLE
         addGenre($Genre, $ScannedBarcode, $connection);
-        
+
         //INSERT INTO Publisher TABLE
         addPublisher($Publisher, $ScannedBarcode, $connection);
-        
+
         //INSERT INTO Author TABLE
         if($MName == "''") {
             $MName = "null";
@@ -898,7 +1124,7 @@ function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher,
         }
         addAuthor($FName, $MName, $LName, $ScannedBarcode, $connection);
     }
-    else { echo "Insert book failed.<br />" . mysqli_error($connection); }
+    else { echo "An error occured.<br />" . mysqli_error($connection); }
 }
 
 // Add genre
@@ -975,10 +1201,10 @@ function removeStaff($SIN,$connection) {
     }
 }
 
-function hireStaff($givenSIN, $givenFirstName, $givenLastName, $givenEmail,$givenAddress, $givenCity, $givenPostalCode,$decidedWage,$decidedPosition, $theirSupervisorSSN, $givenBranchNo, $password,$connection) {
+function hireStaff($givenPhoneNo, $givenSIN, $givenFirstName, $givenMiddleName, $givenLastName, $givenEmail,$givenAddress, $givenCity, $givenPostalCode,$decidedWage,$decidedPosition, $theirSupervisorSSN, $givenBranchNo, $password,$connection) {
 	//INSERT into Staff table
 	$query = 	"INSERT INTO        Staff
-        		VALUES        	($givenSIN, $givenFirstName, $givenLastName, $givenEmail, 
+        		VALUES        	($givenSIN, $givenFirstName, $givenMiddleName, $givenLastName, $givenEmail, 
                    			 	$givenAddress, $givenCity, $givenPostalCode, 
             					$decidedWage, 
                     			$decidedPosition, $theirSupervisorSSN, $givenBranchNo, $password)";
@@ -989,6 +1215,13 @@ function hireStaff($givenSIN, $givenFirstName, $givenLastName, $givenEmail,$give
     // Check if result is valid
     if($result != false) {
         echo "Insert successfull!";
+        $StaffNo = mysqli_insert_id($connection);
+                
+        $query =   "INSERT INTO staff_phoneno
+                    VALUES      ($givenPhoneNo,$StaffNo)";
+        $result = db_query($query, $connection);
+        if($result != false) { echo "Phone number inserted!"; }
+        else { echo mysqli_error($connection); }
     }
     else {
         echo "Insert failed.";
@@ -1053,17 +1286,34 @@ function removeAuthor($id,$connection) {
     }
 }
 
-function addAuthor($FirstName,$MiddleName,$LastName,$book,$connection) {
-    // Check if author is already in database
-    $query  =  "SELECT  AuthorID
+function checkAuthor($FName, $MName, $LName, $connection) {
+    $query =   "SELECT  COUNT(*)
                 FROM    author
-                WHERE   FName = $FirstName AND MName = $MiddleName AND LName = $LastName";
+                WHERE   FName = $FName AND MName = $MName AND LName = $LName";
     
     $result = db_query($query, $connection);
     
     if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                return $row['COUNT(*)'];
+            }
+        }
+        else { return false; }
+    }
+    else { return false; }
+}
+
+function addAuthor($FName,$MName,$LName,$book,$connection) {
+    
+    $check = checkAuthor($FName, $MName, $LName, $connection);
+    
+    if($check == false) {
         $query =   "INSERT INTO author
-                    VALUES      ('null',$FirstName,$MiddleName,$LastName)";
+                    VALUES      ('null',$FName,$MName,$LName)";
         // Run query
         $result = db_query($query, $connection);
 
@@ -1087,36 +1337,61 @@ function addAuthor($FirstName,$MiddleName,$LastName,$book,$connection) {
     else {
         echo "Author already exists!<br />";
         
-            print_r($result);
+        $query =   "SELECT  *
+                    FROM    author
+                    WHERE   FName = $FName AND MName = $MName AND LName = $LName";
+        
+        $result = db_query($query, $connection);
+        
         while($row = mysqli_fetch_assoc($result)) {
             $rows[] = $row;
         }
         
-        foreach($rows as $row) {
-            // Insert relationship
-            $name = db_quote($row['AuthorID'],$connection);
-            if(isset($book)) {
-                $query =   "INSERT INTO author_books(AuthorID, BookNo)
-                            VALUES      ($name, $book)";
-                // Run query
-                $result = db_query($query, $connection);
-                // Check if result is valid
-                if($result != false) { echo "Insert author relationship successful!<br />"; }
-                else { echo "Insert author relationship failed.<br />" . mysqli_errno($connection); }
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                // Insert relationship
+                $name = db_quote($row['AuthorID'],$connection);
+                if(isset($book)) {
+                    $query =   "INSERT INTO author_books(AuthorID, BookNo)
+                                VALUES      ($name, $book)";
+                    // Run query
+                    $result = db_query($query, $connection);
+                    // Check if result is valid
+                    if($result != false) { echo "Insert author relationship successful!<br />"; }
+                    else { echo "Insert author relationship failed.<br />" . mysqli_errno($connection); }
+                }
             }
         }
     }
 }
 
-function addPublisher($name, $book, $connection) {
-    // Check if publisher is already in database
-    $query  =  "SELECT  *
-                FROM    publisher
+function checkPublisher($name, $connection) {
+    $query =   "SELECT  Count(*)
+                FROM    Publisher
                 WHERE   PublisherName = $name";
     
     $result = db_query($query, $connection);
     
-    if($result == false) {
+    if($result != false) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                return $row['Count(*)'];
+            }
+        }
+        else { return false; }
+    }
+    else { return false; }
+}
+
+function addPublisher($name, $book, $connection) {
+    
+    $checkPublisher = checkPublisher($name, $connection);
+    
+    if($checkPublisher == false) {
+        
         $query =   "INSERT INTO Publisher
                     VALUES      ($name)";
         // Run query
@@ -1142,21 +1417,29 @@ function addPublisher($name, $book, $connection) {
     else {
         echo "Publisher already exists!<br />";
         
+        $query =   "SELECT  *
+                    FROM    publisher
+                    WHERE   PublisherName = $name";
+        
+        $result = db_query($query, $connection);
+        
         while($row = mysqli_fetch_assoc($result)) {
             $rows[] = $row;
         }
         
-        foreach($rows as $row) {
-            // Insert relationship
-            $name = db_quote($row['PublisherName'],$connection);
-            if(isset($book)) {
-                $query =   "INSERT INTO publisher_books(PublisherName, BookNo)
-                            VALUES      ($name, $book)";
-                // Run query
-                $result = db_query($query, $connection);
-                // Check if result is valid
-                if($result != false) { echo "Insert publisher relationship successful!<br />"; }
-                else { echo "Insert publisher relationship failed.<br />" . mysqli_errno($connection); }
+        if(!empty($rows)) {
+            foreach($rows as $row) {
+                // Insert relationship
+                $name = db_quote($row['PublisherName'],$connection);
+                if(isset($book)) {
+                    $query =   "INSERT INTO publisher_books(PublisherName, BookNo)
+                                VALUES      ($name, $book)";
+                    // Run query
+                    $result = db_query($query, $connection);
+                    // Check if result is valid
+                    if($result != false) { echo "Insert publisher relationship successful!<br />"; }
+                    else { echo "Insert publisher relationship failed.<br />" . mysqli_errno($connection); }
+                }
             }
         }
     }

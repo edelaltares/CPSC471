@@ -23,20 +23,20 @@ if (isset($_POST['username']) and isset($_POST['password'])) {
 <table width="100%">
     <tr>
         <td width="50%"><h3>Staff Operations</h3></td>
-        <?php if($manager) { ?><td width="50%"><h3>Manager Operations</h3></td><?php } ?>
+        <?php if($manager == 1) { ?><td width="50%"><h3>Manager Operations</h3></td><?php } ?>
     </tr>
     <tr>
         <td>
             <ul>
                 <li><a href="borrow.php">Loan Books</a></li>
-                <li><a href="payments.php">Make Payments</a></li>
+                <li><a href="make-payment.php">Make Payments</a></li>
                 <li><a href="add-book.php">Add book</a></li>
                 <li><a href="remove-book.php">Remove book</a></li>
                 <li><a href="add-patron.php">Register patron</a></li>
                 <li><a href="remove-patron.php">Remove patron</a></li>
             </ul>
         </td>
-        <?php if($manager) { ?>
+        <?php if($manager == 1) { ?>
         <td>
             <ul>
                 <li><a href="add-staff.php">Add staff account</a></li>
