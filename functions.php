@@ -1091,7 +1091,6 @@ function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher,
     // Check if result is valid
     if($result2 != false) {
         echo "Insert book successfull!<br />";
-<<<<<<< HEAD
 
         $ScannedBarcode = mysqli_insert_id($connection);
 
@@ -1110,8 +1109,7 @@ function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher,
             $result = db_query($query, $connection);
             
             if($result == false) { echo "Journal version was not inserted.<br />" . mysqli_error($connection); }
-=======
-        
+
         if($result != false) {
             while($row = mysqli_fetch_assoc($result2)) {
                 $rows[] = $row;
@@ -1119,7 +1117,6 @@ function addBook($type, $ISBN, $CallNo, $Title, $BranchNo, $Summary, $Publisher,
             foreach($rows as $row) {
                 $ScannedBarcode = db_quote($row['Barcode'], $connection);
             }
->>>>>>> origin/master
         }
         
         //INSERT INTO genre TABLE
@@ -1455,5 +1452,5 @@ function addPublisher($name, $book, $connection) {
         }
     }
 }
-
+}
 ?>
